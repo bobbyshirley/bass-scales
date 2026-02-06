@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bass Guitar Major Scales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+        }
+
+        .scale-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .scale-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .scale-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .scale-btn.active {
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            border-color: #00d4ff;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .scale-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scale-name {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+
+        .scale-notes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .note {
+            background: rgba(0, 212, 255, 0.2);
+            border: 2px solid #00d4ff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .fretboard-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fretboard {
+            min-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .string {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .string-label {
+            width: 40px;
+            font-weight: bold;
+            color: #00d4ff;
+            font-size: 18px;
+        }
+
+        .frets {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        .fret {
+            flex: 1;
+            height: 50px;
+            border-right: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fret:first-child {
+            border-left: 4px solid #fff;
+        }
+
+        .fret-marker {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #00d4ff;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.5);
+            z-index: 10;
+        }
+
+        .fret-marker.root {
+            background: #ff4757;
+            box-shadow: 0 2px 10px rgba(255, 71, 87, 0.5);
+        }
+
+        .fret-numbers {
+            display: flex;
+            margin-left: 40px;
+            margin-bottom: 10px;
+        }
+
+        .fret-number {
+            flex: 1;
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .inlay-dots {
+            display: flex;
+            margin-left: 40px;
+            margin-top: 5px;
+            height: 10px;
+        }
+
+        .inlay-dot {
+            flex: 1;
+            text-align: center;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .legend-color.root {
+            background: #ff4757;
+        }
+
+        .legend-color.note {
+            background: #00d4ff;
+        }
+
+        .pattern-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pattern-info h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+
+        .pattern-info p {
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .scale-info {
+                padding: 20px;
+            }
+
+            .fretboard-container {
+                padding: 10px;
+            }
+
+            .scale-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎸 Bass Guitar Major Scales</h1>
+            <p class="subtitle">Learn all 12 major scales with interactive fretboard diagrams</p>
+        </header>
+
+        <div class="scale-selector" id="scaleSelector"></div>
+
+        <div class="scale-info">
+            <h2 class="scale-name" id="scaleName"></h2>
+            <div class="scale-notes" id="scaleNotes"></div>
+        </div>
+
+        <div class="fretboard-container">
+            <div class="fret-numbers" id="fretNumbers"></div>
+            <div class="fretboard" id="fretboard"></div>
+            <div class="inlay-dots" id="inlayDots"></div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color root"></div>
+                <span>Root Note</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color note"></div>
+                <span>Scale Notes</span>
+            </div>
+        </div>
+
+        <div class="pattern-info">
+            <h3>How to Practice</h3>
+            <p>
+                <strong>1. Start with one octave:</strong> Play from the root note (red) to the next root note.<br>
+                <strong>2. Use proper fingering:</strong> Typically one finger per fret (index=1, middle=2, ring=3, pinky=4).<br>
+                <strong>3. Play ascending and descending:</strong> Go up the scale, then back down.<br>
+                <strong>4. Use a metronome:</strong> Start slow and gradually increase tempo.<br>
+                <strong>5. Learn the pattern:</strong> Major scale pattern is W-W-H-W-W-W-H (W=whole step, H=half step).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const scales = {
+            'C': { root: 'C', notes: ['C', 'D', 'E', 'F', 'G', 'A', 'B'] },
+            'C#/Db': { root: 'C#', notes: ['C#', 'D#', 'F', 'F#', 'G#', 'A#', 'C'] },
+            'D': { root: 'D', notes: ['D', 'E', 'F#', 'G', 'A', 'B', 'C#'] },
+            'D#/Eb': { root: 'D#', notes: ['D#', 'F', 'G', 'G#', 'A#', 'C', 'D'] },
+            'E': { root: 'E', notes: ['E', 'F#', 'G#', 'A', 'B', 'C#', 'D#'] },
+            'F': { root: 'F', notes: ['F', 'G', 'A', 'A#', 'C', 'D', 'E'] },
+            'F#/Gb': { root: 'F#', notes: ['F#', 'G#', 'A#', 'B', 'C#', 'D#', 'F'] },
+            'G': { root: 'G', notes: ['G', 'A', 'B', 'C', 'D', 'E', 'F#'] },
+            'G#/Ab': { root: 'G#', notes: ['G#', 'A#', 'C', 'C#', 'D#', 'F', 'G'] },
+            'A': { root: 'A', notes: ['A', 'B', 'C#', 'D', 'E', 'F#', 'G#'] },
+            'A#/Bb': { root: 'A#', notes: ['A#', 'C', 'D', 'D#', 'F', 'G', 'A'] },
+            'B': { root: 'B', notes: ['B', 'C#', 'D#', 'E', 'F#', 'G#', 'A#'] }
+        };
+
+        const bassStrings = [
+            { name: 'G', notes: ['G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D'] },
+            { name: 'D', notes: ['D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A'] },
+            { name: 'A', notes: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E'] },
+            { name: 'E', notes: ['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'] }
+        ];
+
+        let currentScale = 'C';
+
+        function initializeScaleSelector() {
+            const selector = document.getElementById('scaleSelector');
+            Object.keys(scales).forEach(scaleName => {
+                const btn = document.createElement('button');
+                btn.className = 'scale-btn';
+                btn.textContent = scaleName;
+                btn.onclick = () => selectScale(scaleName);
+                if (scaleName === currentScale) btn.classList.add('active');
+                selector.appendChild(btn);
+            });
+        }
+
+        function selectScale(scaleName) {
+            currentScale = scaleName;
+            document.querySelectorAll('.scale-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === scaleName);
+            });
+            displayScale();
+        }
+
+        function displayScale() {
+            const scale = scales[currentScale];
+            
+            // Display scale name
+            document.getElementById('scaleName').textContent = `${currentScale} Major Scale`;
+            
+            // Display scale notes
+            const notesContainer = document.getElementById('scaleNotes');
+            notesContainer.innerHTML = '';
+            scale.notes.forEach(note => {
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note';
+                noteDiv.textContent = note;
+                notesContainer.appendChild(noteDiv);
+            });
+            
+            // Display fretboard
+            displayFretboard(scale);
+        }
+
+        function displayFretboard(scale) {
+            const fretboard = document.getElementById('fretboard');
+            fretboard.innerHTML = '';
+            
+            // Display fret numbers (0-19)
+            const fretNumbers = document.getElementById('fretNumbers');
+            fretNumbers.innerHTML = '';
+            for (let i = 0; i <= 19; i++) {
+                const fretNum = document.createElement('div');
+                fretNum.className = 'fret-number';
+                fretNum.textContent = i;
+                fretNumbers.appendChild(fretNum);
+            }
+            
+            // Display inlay dots
+            const inlayDots = document.getElementById('inlayDots');
+            inlayDots.innerHTML = '';
+            const inlayPositions = [3, 5, 7, 9, 12, 15, 17];
+            for (let i = 0; i <= 19; i++) {
+                const dotContainer = document.createElement('div');
+                dotContainer.className = 'inlay-dot';
+                if (inlayPositions.includes(i)) {
+                    const dot = document.createElement('span');
+                    dot.className = 'dot';
+                    dotContainer.appendChild(dot);
+                    if (i === 12) {
+                        const dot2 = document.createElement('span');
+                        dot2.className = 'dot';
+                        dotContainer.appendChild(dot2);
+                    }
+                }
+                inlayDots.appendChild(dotContainer);
+            }
+            
+            // Display strings
+            bassStrings.forEach(string => {
+                const stringDiv = document.createElement('div');
+                stringDiv.className = 'string';
+                
+                const label = document.createElement('div');
+                label.className = 'string-label';
+                label.textContent = string.name;
+                stringDiv.appendChild(label);
+                
+                const fretsDiv = document.createElement('div');
+                fretsDiv.className = 'frets';
+                
+                string.notes.forEach((note, fretIndex) => {
+                    const fretDiv = document.createElement('div');
+                    fretDiv.className = 'fret';
+                    
+                    // Normalize note for comparison (remove sharps/flats ambiguity)
+                    const normalizedNote = note.replace('A#', 'Bb').replace('C#', 'Db').replace('D#', 'Eb').replace('F#', 'Gb').replace('G#', 'Ab');
+                    const normalizedScaleNotes = scale.notes.map(n => n.replace('A#', 'Bb').replace('C#', 'Db').replace('D#', 'Eb').replace('F#', 'Gb').replace('G#', 'Ab'));
+                    
+                    if (normalizedScaleNotes.includes(normalizedNote)) {
+                        const marker = document.createElement('div');
+                        marker.className = 'fret-marker';
+                        if (note === scale.root || normalizedNote === scale.root.replace('A#', 'Bb').replace('C#', 'Db').replace('D#', 'Eb').replace('F#', 'Gb').replace('G#', 'Ab')) {
+                            marker.classList.add('root');
+                        }
+                        marker.textContent = note;
+                        fretDiv.appendChild(marker);
+                    }
+                    
+                    fretsDiv.appendChild(fretDiv);
+                });
+                
+                stringDiv.appendChild(fretsDiv);
+                fretboard.appendChild(stringDiv);
+            });
+        }
+
+        // Initialize
+        initializeScaleSelector();
+        displayScale();
+    </script>
+</body>
+</html>
